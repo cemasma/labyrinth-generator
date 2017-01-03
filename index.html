@@ -1,0 +1,37 @@
+<html>
+
+<head>
+    <title>Dinamic Labyrinth</title>
+    <script src="resources/script.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <div class="wall-vertical"></div>
+        <div class="wall-horizontal"></div>
+        <div class="wall-horizontal"></div>
+        <div class="wall-vertical"></div>
+    </div>
+</body>
+
+<style>
+    div {
+        position: absolute;
+    }
+
+    .wall-horizontal {
+        display: inline-block;
+        height: 7px;
+        width: 50px;
+        background: black;
+    }
+    
+    .wall-vertical {
+        display: inline-block;
+        height: 50px;
+        width: 7px;
+        background: black;
+    }
+</style>
+
+</html>
