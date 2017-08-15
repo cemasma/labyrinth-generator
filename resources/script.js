@@ -1,3 +1,6 @@
+// 35 - 4.9 yataylar için yükseklik - genişlik, dikeyler için genişlik - yüksekliktir
+// bu işlem bize yukarıdan ve yanlardan divlerin pozisyonunu ayarlamamızı sağlar
+
 class LabyrinthGenerator {
 
     constructor(x, y) {
@@ -16,30 +19,52 @@ class LabyrinthGenerator {
     }
 
     createRoads(x, y) {
-        let neighbors = this.getNeighbors(x, y);
-        if (neighbors.length > 0) {
-            let randomNumber = Math.floor(Math.random() * neighbors.length);
-            let neighbor = neighbors[randomNumber];
-            if (neighbor.x > x) {
-                this.removeWall(x, y, neighbor.x, neighbor.y, "up");
-            } else if (neighbor.x < x) {
-                this.removeWall(x, y, neighbor.x, neighbor.y, "down");
-            } else if (neighbor.y > y) {
-                this.removeWall(x, y, neighbor.x, neighbor.y, "right");
-            } else if (neighbor.y < y) {
-                this.removeWall(x, y, neighbor.x, neighbor.y, "left");
+        for (let i = 0; i < this.row; i++) {
+            for (let j = 0; j < this.col; j++) {
+                let neighbors = this.getNeighbors(i, j);
+                let vertHori = { "vertical": [], "horizontal": [] };
+
+                for (let nei of neighbors) {
+
+                    if (nei.x > i) {
+                        vertHori["vertical"].push({ "value": nei.x, "direction": "up" });
+                    }
+
+                    if (nei.x < i) {
+                        vertHori["vertical"].push({ "value": nei.x, "direction": "down" });
+                    }
+
+                    if (nei.y > j) {
+                        vertHori["horizontal"].push({ "value": nei.y, "direction": "right" });
+                    }
+
+                    if (nei.y < j) {
+                        vertHori["horizontal"].push({ "value": nei.y, "direction": "left" });
+                    }
+                }
+
+                let randomIndices = [Math.floor(Math.random() * 2), Math.floor(Math.random() * 2)];
+
+                if (randomIndices[0] < vertHori.horizontal.length) {
+                    let elem = vertHori.horizontal[randomIndices[0]];
+                    this.removeWall(i, j, i, elem.value, elem.direction);
+
+                    this.addRecord(i, j, i, elem.value);
+
+                }
+
+                if (randomIndices[0] < vertHori.vertical.length) {
+                    let elem = vertHori.vertical[randomIndices[0]];
+                    this.removeWall(i, j, elem.value, j, elem.direction);
+
+                    this.addRecord(i, j, elem.value, j);
+                }
             }
-            this.addRecord(x, y, neighbor.x, neighbor.y);
-            this.createRoads(neighbor.x, neighbor.y);
-        } else {
-            this.createRoads(Math.floor(Math.random() * this.row), Math.floor(Math.random() * this.col));
         }
     }
 
     recordCheck(x, y, z, t) {
-        if (this.wallRecords[`${x}:${y}`] != null) {
-            return false;
-        } else if (this.wallRecords[`${z}:${t}`] != null) {
+        if (this.wallRecords[`${x}:${y}`] != null || this.wallRecords[`${z}:${t}`] != null) {
             return false;
         }
         return true;
@@ -54,18 +79,19 @@ class LabyrinthGenerator {
 
     getNeighbors(x, y) {
         let neighbors = [];
+        if (y - 1 > -1 && this.recordCheck(x, y, x, y - 1)) {
+            neighbors.push({ "x": x, "y": y - 1 });
+        }
+        if (y + 1 < this.col && this.recordCheck(x, y, x, y + 1)) {
+            neighbors.push({ "x": x, "y": y + 1 });
+        }
         if (x + 1 < this.row && this.recordCheck(x, y, x + 1, y)) {
             neighbors.push({ "x": x + 1, "y": y });
         }
         if (x - 1 > -1 && this.recordCheck(x, y, x - 1, y)) {
             neighbors.push({ "x": x - 1, "y": y });
         }
-        if (y - 1 > -1 && this.recordCheck(x, y, x, y - 1)) {
-            neighbors.push({ "x": x, "y": y - 1 });
-        }
-        if (y + 1 < this.col && this.recordCheck(x, y, x, y + 1)) {
-            neighbors.push({ "x" : x, "y" : y + 1});
-        }
+
         return neighbors;
     }
 
@@ -77,7 +103,7 @@ class LabyrinthGenerator {
                 box = this.addWallsToBox(box, x, y);
                 document.body.appendChild(box);
             }
-            this.top += 43;
+            this.top += (35 - 4.9);
         }
     }
 
@@ -126,19 +152,19 @@ class LabyrinthGenerator {
                     break;
                 case 2:
                     div.className = "wall-horizontal";
-                    div.style.top = this.top + 43;
+                    div.style.top = this.top + (35 - 4.9);
                     div.style.left = this.left;
                     break;
                 case 3:
                     div.className = "wall-vertical";
                     div.style.top = this.top;
-                    div.style.left = this.left + 43;
+                    div.style.left = this.left + (35 - 4.9);
                     break;
             }
             div.id = `${x}x${y}y${i}`;
             box.appendChild(div);
         }
-        this.left += 43;
+        this.left += (35 - 4.9);
         return box;
     }
 }
